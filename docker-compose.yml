@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  mssql:
+    image: db-istw:4.0
+    ports:
+      - "3306:1433"
+    environment:
+      SA_PASSWORD: B2619898g*
+      ACCEPT_EULA: "Y"
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+  joget:
+    image: joget-esign:4.1
+    ports:
+      - "80:8080"
+    environment:
+      DB_HOST: mssql # This should resolve to the service name
+      DB_PORT: 1433  # Adjusted to the MSSQL port
+      DB_NAME: jwdb
+      DB_USER: sa
+      DB_PASS: B2619898g*
+    depends_on:
+      - mssql
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+          cpus: '1.5'
+    volumes:
+      - joget_data:/usr/local/joget
+
+volumes:
+  mssql_data:
+    driver: local
+  joget_data:
+    driver: local
